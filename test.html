@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akuna</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body {
+    height:100%; width:100%;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #fff, #000);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow-x:hidden;
+  }
+
+  .container {
+    max-width:600px;
+    width:90%;
+    background: rgba(255,255,255,0.95);
+    padding:20px;
+    border-radius:20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    text-align:center;
+    transform: translateY(50px);
+    opacity:0;
+    transition: all 1s ease;
+  }
+
+  .container.show { transform: translateY(0); opacity:1; }
+
+ 
+  .logo-container { display:flex; justify-content:center; margin-bottom:10px; }
+  .logo {
+    width: 150px;
+    animation: pulseRotate 2s ease-in-out infinite,
+               glow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulseRotate {
+    0% { transform: scale(0.9) rotate(0deg); }
+    50% { transform: scale(1.05) rotate(5deg); }
+    100% { transform: scale(0.9) rotate(0deg); }
+  }
+
+  @keyframes glow {
+    0% { filter: drop-shadow(0 0 5px #000); }
+    50% { filter: drop-shadow(0 0 15px #333); }
+    100% { filter: drop-shadow(0 0 5px #000); }
+  }
+
+  h2 { font-size:1.5rem; margin-bottom:15px; color:#222; }
+  p { font-size:1rem; line-height:1.6; margin-bottom:20px; color:#333; }
+
+  button {
+    padding:12px 30px;
+    font-size:1rem;
+    border-radius:50px;
+    border:2px solid #222;
+    background: linear-gradient(45deg, #000, #555);
+    color:#fff;
+    cursor:pointer;
+    transition: all 0.3s ease;
+    box-shadow:0 5px 20px rgba(0,0,0,0.4);
+  }
+
+  button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow:0 10px 25px rgba(0,0,0,0.6);
+  }
+
+  input {
+    width: 80%;
+    padding:10px;
+    margin:5px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:1rem;
+  }
+
+  #generateBtn, #copyBtn, #revealBtn {
+    margin-top:10px;
+    padding:10px 25px;
+    font-size:1rem;
+    border-radius:50px;
+    border:none;
+    background:#ff5c5c;
+    color:#fff;
+    cursor:pointer;
+    transition:0.3s;
+  }
+
+  #generateBtn:hover, #copyBtn:hover, #revealBtn:hover {
+    transform: scale(1.05);
+    background:#e04c4c;
+  }
+
+  #generatedLink { margin-top:15px; word-break: break-all; }
+
+ 
+  #surprise { display:none; opacity:0; transition: all 1s ease; }
+  #surprise .buttons { margin-top:20px; position:relative; height:120px; }
+  #surprise button { position:absolute; }
+  #yes { background:#ff4d6d; color:white; left:70%; transform:translateX(-50%); }
+  #no { background:#ddd; left:10%; }
+  #finalMessage { display:none; margin-top:20px; color:#ff4d6d; font-weight:bold; }
+
+</style>
+</head>
+<body>
+
+
+<div class="container" id="intro">
+  <div class="logo-container">
+    <img src="logo.png" class="logo">
+  </div>
+  <h2>Un site interactif et romantique</h2>
+    <p>
+      Ce site permet d’envoyer <strong>un message surprise à ton crush</strong> !<br>
+      Une expérience moderne, fluide et personnalisée pour partager de l’amour et du fun.
+    </p>
+    <div class="donation">
+  Si vous approuvez l’expérience, n’oubliez pas de me faire une petite donation.<br>
+  Mon numéro pour Orange Money : <a href="tel:+261376944122">+261 37 69 44 122</a><br>
+  On accepte tout type de paiement. Veuillez me contacter 
+  <a href="https://www.facebook.com/share/1GtwK6AQGt/" target="_blank" class="facebook-link">ici</a>.
+</div>
+
+<button id="startBtn">Découvrir le site 💌</button>
+</div>
+
+
+<div class="container" id="generateLink" style="display:none;">
+  <h2>Envoyer un message surprise 💌</h2>
+  <p>Entrez votre nom et celui du destinataire :</p>
+  <input id="fromName" placeholder="Votre nom">
+  <input id="toName" placeholder="Nom du destinataire">
+  <button id="generateBtn">Générer le lien</button>
+  <p id="generatedLink"></p>
+  <button id="copyBtn" style="display:none;">📋 Copier le lien</button>
+</div>
+
+
+<div class="container" id="messageSent" style="display:none;">
+  <h2 id="toNameIntro"></h2>
+  <p>Prépare-toi à découvrir la surprise !</p>
+  <button id="revealBtn">Découvrir la surprise 💌</button>
+
+  
+  <div id="surprise">
+    <h2 id="toNameGame"></h2>
+    <p>J'ai une petite question à te poser...🥺</p>
+    <p><big>Est-ce que tu veux être ma valentine ?</big></p>
+    <div class="buttons">
+      <button id="no">Non😢</button>
+      <button id="yes">Oui💕</button>
+    </div>
+    <div id="finalMessage">
+     Merci d'avoir dit oui😍
+    </div>
+  </div>
+</div>
+
+<script>
+const intro = document.getElementById('intro');
+const startBtn = document.getElementById('startBtn');
+const generateLink = document.getElementById('generateLink');
+const generateBtn = document.getElementById('generateBtn');
+const generatedLink = document.getElementById('generatedLink');
+const copyBtn = document.getElementById('copyBtn');
+const messageSent = document.getElementById('messageSent');
+const toNameIntro = document.getElementById('toNameIntro');
+const revealBtn = document.getElementById('revealBtn');
+
+const surprise = document.getElementById("surprise");
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+const finalMessage = document.getElementById("finalMessage");
+const toNameGame = document.getElementById("toNameGame");
+
+window.onload = ()=> setTimeout(()=> intro.classList.add("show"),100);
+
+startBtn.onclick = ()=>{
+  intro.style.display="none";
+  generateLink.style.display="block";
+  generateLink.classList.add("show");
+};
+
+generateBtn.onclick = ()=>{
+  const from = fromName.value || "Ton crush";
+  const to = toName.value || "toi";
+  const link = `${location.origin}${location.pathname}?from=${from}&to=${to}`;
+  generatedLink.innerHTML = `<a href="${link}" target="_blank">${link}</a>`;
+  copyBtn.style.display="inline-block";
+  copyBtn.onclick = ()=> navigator.clipboard.writeText(link);
+};
+
+const params = new URLSearchParams(location.search);
+if(params.get("from")){
+  intro.style.display = "none"; 
+  generateLink.style.display="none"; 
+  messageSent.style.display="block";  
+  messageSent.classList.add("show");
+  toNameIntro.textContent = params.get("from")+" t’a envoyé un message 💖";
+  toNameGame.textContent = params.get("to")+"❤";
+}
+
+revealBtn.onclick = ()=>{
+  revealBtn.style.display="none";
+  surprise.style.display="block";
+  setTimeout(()=> surprise.style.opacity=1,100);
+};
+
+function moveNo(){
+  const maxX = surprise.clientWidth - noBtn.offsetWidth;
+  const maxY = surprise.clientHeight - noBtn.offsetHeight;
+  noBtn.style.left = Math.random()*maxX+"px";
+  noBtn.style.top = Math.random()*maxY+"px";
+}
+noBtn.onmouseover = moveNo;
+noBtn.ontouchstart = moveNo;
+
+yesBtn.onclick = ()=>{
+  yesBtn.style.display="none";
+  noBtn.style.display="none";
+  finalMessage.style.display="block";
+};
+</script>
+</body>
+</html>
